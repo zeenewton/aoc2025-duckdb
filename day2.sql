@@ -1,6 +1,8 @@
+set variable input_file = case when getenv('AOC_INPUT') != '' then getenv('AOC_INPUT') else 'day2.txt' end;
+
 create table unnested as 
 select unnest(split(content, ',')) as id_range
-from read_text('day2.txt')
+from read_text(getvariable('input_file'))
 ;
 
 
@@ -10,14 +12,12 @@ from unnested
 ;
 
 select 
-    sum(range_val)
+    sum(range_val), 'part 1 - puzzle answer (number repeats)' as description
 from ranges 
 where length(range_val::varchar) % 2 = 0 
 and substring(range_val::varchar, 1, (length(range_val::varchar)/2)::bigint) =substring(range_val::varchar, (length(range_val::varchar)/2)::bigint + 1)
 ;
 
-.mode table
-;
 create table sub_matches as
 from ranges 
 select 
@@ -37,6 +37,6 @@ select
     end as p_val
 ;
 
-select sum(p_val)
+select sum(p_val), 'part 2 - puzzle answer (any # repeats)' as description
 from sub_matches
 where p_val > 0
